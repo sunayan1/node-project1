@@ -14,3 +14,12 @@ export const loginService = async (loginData)=>{
     }
     
 };
+
+const usersData=[
+    {email: "ram@gmail.com", password:"ldjslf"},
+    {email: "hari@gmail.com", password:";ldfjsll"},
+];
+
+export const allUsersService= async ()=>{
+    return usersData; 
+}
