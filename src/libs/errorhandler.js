@@ -9,7 +9,7 @@ export const errorHandler=(error,req,res,next)=>{
     if(error?.cause=="CustomError"){
         res.status(StatusCodes.UNAUTHORIZED).json({
             error: "Unauthorized error",
-            message: error.message,
+            message: error.message
         });
     }
 
