@@ -68,6 +68,14 @@ export const registerUserService=async(registerData)=>{
 
 }
 
+export const userProfileService = async (userId)=>{
+    const user= await prisma.user.findUnique({
+        where:{id: userId},
+        omit: {password: true}
+    })
+    return user; 
+}
+
 
 
 

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import { prisma } from "../db/index.js";
 
 
-export const authMiddleWare=(req, res, next)=>{
+export const authMiddleWare=async (req, res, next)=>{
     const authHeader= req.headers.authorization
     const authToken=  authHeader.split(" ")[1];
 
@@ -14,12 +14,18 @@ export const authMiddleWare=(req, res, next)=>{
     console.log(authToken);
     try{
         // console.log(process.env.JWT_SECRET)
-        const saman= jwt.verify(authToken, process.env.JWT_SECRET);
-        console.log(saman);
-
-        const user= prisma.user.findUnique({where: {id:saman.sub}});
-
+        const payload= jwt.verify(authToken, process.env.JWT_SECRET);
+        console.log("SDf",payload.sub);
+        const userId = payload.sub
+        const user=await prisma.user.findUnique({where:{id:userId}})
+        console.log(user);
+        if(!user){
+            res.status(StatusCodes.UNAUTHORIZED).json({message: "Unauthorized token"});
+        }
+        req.userId= user.id; 
+        next();
     }catch(error){
         console.log(error)
+        next()
     }
 }

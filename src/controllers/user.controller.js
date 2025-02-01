@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import {allUsersService, deleteUsersService, loginService,registerUserService} from "../services/user.service.js";
+import {allUsersService, deleteUsersService, loginService,registerUserService, userProfileService} from "../services/user.service.js";
 
 
 
@@ -46,3 +46,15 @@ export const writeUser=async(req,res,next)=>{
         next(error)
     }
 }
+
+export const getUserProfileController=async(req,res,next)=>{
+    console.log("UserId for profile: ", req.userId)
+    try{
+        const data=await userProfileService(req.userId);
+        res.status(200).json({data})
+    }catch(error){
+        console.error(error)
+        next(error)
+    }
+}
+
