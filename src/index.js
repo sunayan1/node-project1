@@ -5,6 +5,7 @@ import userRouter from "./routes/user.routes.js";
 import bodyParser from "body-parser";
 import { errorHandler } from "./libs/errorhandler.js";
 import cors from "cors"
+import postRouter from "./routes/post.routes.js";
 
 
 const app= express()
@@ -24,6 +25,7 @@ userRouter.get("/",(req,res)=>{
 
 
 app.use("/api/users", (userRouter));
+app.use("/api/post", postRouter)
 
 console.log(process.env.PORT);
 

@@ -1,12 +1,13 @@
 import { StatusCodes } from "http-status-codes";
 import {allUsersService, deleteUsersService, loginService,registerUserService, userProfileService} from "../services/user.service.js";
+import { createUserSchema, loginUserSchema } from "../schemas/user.schema.js";
 
 
 
 export const loginController= async(req,res,next)=>{
     console.log(req);
-
     try{
+        loginUserSchema.parse(req.body)
         const data= await loginService(req.body);
         res.status(StatusCodes.ACCEPTED).json(data);
     }catch(error){
@@ -39,8 +40,10 @@ export const allUsersContrller= async (req,res)=>{
 
 export const writeUser=async(req,res,next)=>{
     try{
+        createUserSchema.parse(req.body);
         const data=await registerUserService(req.body);
         res.status(200).json({data})
+        console.log("Registered Successfully! ")
     }catch(error){
         console.error(error)
         next(error)
