@@ -51,7 +51,7 @@ export const writeUser=async(req,res,next)=>{
 }
 
 export const getUserProfileController=async(req,res,next)=>{
-    console.log("UserId for profile: ", req.userId)
+    // console.log("UserId for profile: ", req.userId)
     try{
         const data=await userProfileService(req.userId);
         res.status(200).json({data})

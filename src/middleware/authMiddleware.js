@@ -4,14 +4,17 @@ import { prisma } from "../db/index.js";
 
 
 export const authMiddleWare=async (req, res, next)=>{
+    // console.log("asddddf,",req.headers)
     const authHeader= req.headers.authorization
-    const authToken=  authHeader.split(" ")[1];
-
+    // console.log("herasddf",authHeader)
+    const authToken=  authHeader?.split(" ")[1];
+    
+// console.log("asfasf",authToken)
     if(!authToken){
         res.status(StatusCodes.UNAUTHORIZED).json({message: "Invalid Token"});
     }
 
-    console.log(authToken);
+    // console.log(authToken);
     try{
         // console.log(process.env.JWT_SECRET)
         const payload= jwt.verify(authToken, process.env.JWT_SECRET);

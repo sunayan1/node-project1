@@ -26,19 +26,23 @@ model User {
   password String
   gender Gender
 
+ 
+  posts Post[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
   @@map("users")
 }
 
-model User {
-  id String @default(uuid()) @unique
-  contents String
+
+
+model Post{
+  id String @id @default(uuid()) @unique
+  authorId String
+  author User @relation(fields: [authorId], references:[id])
   likesCount Int @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  @@map("users")
+  contents String
+  @@map("posts")
 }
+
