@@ -42,7 +42,11 @@ model Post{
   authorId String
   author User @relation(fields: [authorId], references:[id])
   likesCount Int @default(0)
-  contents String
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
   @@map("posts")
 }
 

@@ -2,7 +2,7 @@ import { StatusCodes } from "http-status-codes";
 
 import { createUserSchema, loginUserSchema } from "../schemas/user.schema.js";
 import { createPostService, deletePostByIdService, getPostByIdService, getPostByUserIdService, getPostService, updatePostService } from "../services/post.service.js";
-import { createPostSchema } from "../schemas/post.schema.js";
+import { createPostSchema, updatePostSchema } from "../schemas/post.schema.js";
 
 export const getAllPostsController= async (req, res, next)=>{
     try{
@@ -62,6 +62,7 @@ export const deletePostController= async (req, res, next)=>{
 
 export const updatePostController= async (req, res, next)=>{
     try{
+        updatePostSchema.parse(req.body);
        const postId= req.params.postId
        const loggedInUserId= req.userId
        const updatedata= req.body

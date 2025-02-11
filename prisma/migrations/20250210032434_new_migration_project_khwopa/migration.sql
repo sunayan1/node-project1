@@ -14,10 +14,12 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "posts" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "authorId" TEXT NOT NULL,
     "likesCount" INTEGER NOT NULL DEFAULT 0,
-    "contents" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "posts_pkey" PRIMARY KEY ("id")
 );
@@ -27,6 +29,9 @@ CREATE UNIQUE INDEX "users_id_key" ON "users"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "posts_id_key" ON "posts"("id");
 
 -- AddForeignKey
 ALTER TABLE "posts" ADD CONSTRAINT "posts_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

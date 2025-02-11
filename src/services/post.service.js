@@ -3,14 +3,16 @@ import { prisma } from "../db/index.js"
 import { generateJwtToken } from "../libs/jwt-utils.js";
 
 export const getPostService= async ()=>{
-    const posts= await prisma.post.findMany()
+    const posts= await prisma.post.findMany({
+        include: {author: {omit: {password: true}}}
+    })
     return posts;
 };
 
 export const createPostService= async(contentData, userId)=>{
     const posts= await prisma.post.create({
         data:{
-            contents: contentData.content,
+            content: contentData.content,
             authorId: userId
         }
     })
@@ -24,28 +26,26 @@ export const updatePostService= async( postId, updateData, loggedInUserId)=>{
         throw new Error("Not found", {cause: "NotFoundCustomError"})
     }
 
-    if(updateData.likeCase=="like"){
-        post.likesCount= post.likesCount+1
-    }else if(updateData.likeCase=='unlike'){
-        if(post.likesCount>0){
-            post.likesCount= post.likesCount-1
-        }
-        
-    }
-
-    if(updateData.content){
-        post.contents= updateData.content; 
+    if(updateData.like){
+        const data= await prisma.post.update({
+            where: {id:postId},
+            data: {
+                likesCount: post.likesCount+1,
+            },
+        })
     }
 
 
-    if(post.userId != loggedInUserId){
+    if(post.authorId != loggedInUserId){
         throw new Error("Unauthorized error", {cause: "UnauthorizedError"})
        
    }
    else{
     const data= await prisma.post.update({
         where:{id:postId},
-        data: post
+        data: {
+            content: updateData.content
+        }
     })
    }
    return post
