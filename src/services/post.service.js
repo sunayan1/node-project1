@@ -2,9 +2,28 @@
 import { prisma } from "../db/index.js"
 import { generateJwtToken } from "../libs/jwt-utils.js";
 
-export const getPostService= async ()=>{
+export const getPostService= async (query)=>{
+    let searchTerm= "";
+    if(query.search){
+        searchTerm= query.search;
+    }
     const posts= await prisma.post.findMany({
-        include: {author: {omit: {password: true}}}
+        
+        // {
+        //     content: {contains:  searchTerm, mode: "insensitive"}
+        // },
+        where: {
+            OR: [
+                {
+                    content: {contains: searchTerm, mode: "insensitive"},
+                },
+                {
+                    author: {fullName: {contains: searchTerm, mode: "insensitive"}}
+                }
+            ]
+        },
+        include: {author: {omit: {password: true}}},
+        orderBy: {createdAt: 'desc'}
     })
     return posts;
 };
@@ -81,6 +100,7 @@ export const deletePostByIdService= async(postId, loggedInUserId)=>{
     }
     else{
         throw new Error("Unauthorized error", {cause: "UnauthorizedError"})
+
     }
    
     return {message: "Post delted successfully"}

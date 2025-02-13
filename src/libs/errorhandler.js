@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import pkg from "jsonwebtoken";
 import { ZodError } from "zod";
