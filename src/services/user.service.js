@@ -14,9 +14,9 @@ export const loginService = async (loginData) => {
 
   const user = await prisma.user.findUnique({
     where: { email: email },
-    // omit:{
-    //     password: true
-    // }
+    // omit: {
+    //   password: true,
+    // },
   });
   if (!user) {
     throw new Error("Invalid Credentials clsdfk", { cause: "CustomeError" });

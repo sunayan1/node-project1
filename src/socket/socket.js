@@ -22,7 +22,7 @@ export const socketHandler = (httpServer) => {
     });
 
     socket.on("sendMessage", (data) => {
-      io.to(room).emit("sendMessageServer", data);
+      io.to(room).emit("sendMessageServer", data.message);
     });
   });
 };

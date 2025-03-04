@@ -9,7 +9,7 @@ import {
 import { createUserSchema, loginUserSchema } from "../schemas/user.schema.js";
 
 export const loginController = async (req, res, next) => {
-  console.log(req);
+  // console.log(req);
   try {
     loginUserSchema.parse(req.body);
     const data = await loginService(req.body);
@@ -21,7 +21,7 @@ export const loginController = async (req, res, next) => {
 };
 
 export const deleteController = async (req, res, next) => {
-  console.log(req);
+  // console.log(req);
 
   try {
     const data = await deleteUsersService(req.body);

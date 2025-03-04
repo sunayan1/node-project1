@@ -1,107 +1,98 @@
-
-import { prisma } from "../db/index.js"
+import { prisma } from "../db/index.js";
 import { generateJwtToken } from "../libs/jwt-utils.js";
 
-export const getPostService= async (query)=>{
-    let searchTerm= "";
-    if(query.search){
-        searchTerm= query.search;
-    }
-    const posts= await prisma.post.findMany({
-        
-        // {
-        //     content: {contains:  searchTerm, mode: "insensitive"}
-        // },
-        where: {
-            OR: [
-                {
-                    content: {contains: searchTerm, mode: "insensitive"},
-                },
-                {
-                    author: {fullName: {contains: searchTerm, mode: "insensitive"}}
-                }
-            ]
+export const getPostService = async (query) => {
+  let searchTerm = "";
+  if (query.search) {
+    searchTerm = query.search;
+  }
+  const posts = await prisma.post.findMany({
+    // {
+    //     content: {contains:  searchTerm, mode: "insensitive"}
+    // },
+    where: {
+      OR: [
+        {
+          content: { contains: searchTerm, mode: "insensitive" },
         },
-        include: {author: {omit: {password: true}}},
-        orderBy: {createdAt: 'desc'}
-    })
-    return posts;
+        {
+          author: { fullName: { contains: searchTerm, mode: "insensitive" } },
+        },
+      ],
+    },
+    include: { author: { omit: { password: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+  return posts;
 };
 
-export const createPostService= async(contentData, userId)=>{
-    const posts= await prisma.post.create({
-        data:{
-            content: contentData.content,
-            authorId: userId
-        }
-    })
-    // const token= await generateJwtToken(user.id)
-    return posts
-}
+export const createPostService = async (contentData, userId) => {
+  const posts = await prisma.post.create({
+    data: {
+      content: contentData.content,
+      authorId: userId,
+    },
+  });
+  // const token= await generateJwtToken(user.id)
+  return posts;
+};
 
-export const updatePostService= async( postId, updateData, loggedInUserId)=>{
-    const post= await prisma.post.findUnique({where:{id:postId}})
-    if(!post){
-        throw new Error("Not found", {cause: "NotFoundCustomError"})
-    }
+export const updatePostService = async (postId, updateData, loggedInUserId) => {
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) {
+    throw new Error("Not found", { cause: "NotFoundCustomError" });
+  }
 
-    if(updateData.like){
-        const data= await prisma.post.update({
-            where: {id:postId},
-            data: {
-                likesCount: post.likesCount+1,
-            },
-        })
-    }
+  if (updateData.like) {
+    const data = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        likesCount: post.likesCount + 1,
+      },
+    });
+  }
 
+  if (post.authorId != loggedInUserId) {
+    throw new Error("Unauthorized error", { cause: "UnauthorizedError" });
+  } else {
+    const data = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        content: updateData.content,
+      },
+    });
+  }
+  return post;
+};
 
-    if(post.authorId != loggedInUserId){
-        throw new Error("Unauthorized error", {cause: "UnauthorizedError"})
-       
-   }
-   else{
-    const data= await prisma.post.update({
-        where:{id:postId},
-        data: {
-            content: updateData.content
-        }
-    })
-   }
-   return post
-   
-}
+export const getPostByIdService = async (postId) => {
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) {
+    throw new Error("Not found", { cause: "NotFoundCustomError" });
+  }
+  return post;
+};
 
-export const getPostByIdService= async (postId)=>{
-    const post= await prisma.post.findUnique({where:{id:postId}})
-    if(!post){
-        throw new Error("Not found", {cause:"NotFoundCustomError"});
-    }
-    return post
-}
+export const getPostByUserIdService = async (userId) => {
+  const posts = await prisma.post.findMany({ where: { authorId: userId } });
+  if (!posts) {
+    throw new Error("Not found", { cause: "NotFoundCustomError" });
+  }
+  return posts;
+};
 
-export const getPostByUserIdService= async (userId)=>{
-    const posts= await prisma.post.findMany({where: {authorId:userId}})
-    if(!posts){
-        throw new Error("Not found", {cause: "NotFoundCustomError"});
-    }
-    return posts
-}
+export const deletePostByIdService = async (postId, loggedInUserId) => {
+  const post = await prisma.post.findUnique({ where: { id: postId } });
 
-export const deletePostByIdService= async(postId, loggedInUserId)=>{
-    const post = await prisma.post.findUnique({where: {id:postId}})
+  if (!post) {
+    throw new Error("Not found", { cause: "NotFoundCustomError" });
+  }
 
-    if(!post){
-        throw new Error("Not found", {cause: "NotFoundCustomError"})
-    }
+  if ((post.userId = loggedInUserId)) {
+    await prisma.post.delete({ where: { id: postId } });
+  } else {
+    throw new Error("Unauthorized error", { cause: "UnauthorizedError" });
+  }
 
-    if(post.userId= loggedInUserId){
-         await prisma.post.delete({where: {id:postId}})
-        
-    }
-    else{
-        throw new Error("Unauthorized error", {cause: "UnauthorizedError"})
-
-    }
-   
-    return {message: "Post delted successfully"}
-}
+  return { message: "Post delted successfully" };
+};

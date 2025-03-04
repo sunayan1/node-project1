@@ -9,6 +9,7 @@ import postRouter from "./routes/post.routes.js";
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
 import { socketHandler } from "./socket/socket.js";
+import router from "./auth/google-auth-route.js";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -25,6 +26,7 @@ userRouter.get("/", (req, res) => {
   res.status(200).json({ message: "welome to this websitee" });
 });
 
+app.use(router);
 app.use("/api/users", userRouter);
 app.use("/api/post", postRouter);
 
